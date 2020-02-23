@@ -139,18 +139,20 @@ module "ec2" {
   ]
   user_data = <<EOF
 #!/bin/bash
+hostnamectl set-hostname ${var.host_name}.${var.domain_name}
+
 dd if=/dev/zero of=/var/swapfile bs=10240 count=50000
 mkswap /var/swapfile ; chmod 600 /var/swapfile
 echo "/var/swapfile     swap           swap    defaults  1   1" >> /etc/fstab
 swapon -a
 
-hostnamectl set-hostname ${var.host_name}.${var.domain_name}
-yes | amazon-linux-extras install epel
-yum install -y git ansible
+yes | amazon-linux-extras install epel | tee -a ~/cloud-init.log
+sleep 5
+yum install -y git ansible | tee -a ~/cloud-init.log
 systemctl enable amazon-ssm-agent ; systemctl restart amazon-ssm-agent
 
 mkdir /root/git ; cd /root/git
-git clone https://github.com/Rendanic/aws_ec2_ossetup.git
+git clone https://github.com/Rendanic/aws_ec2_ossetup.git | tee -a ~/cloud-init.log
 cd aws_ec2_ossetup/ansible
 ./security.sh | tee -a ~/cloud-init.log
 
