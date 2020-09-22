@@ -155,3 +155,32 @@ variable "disable_api_termination" {
   type        = bool
   default     = false
 }
+
+variable "fail2ban_ignoreip" {
+  type        = string
+  description = "optinal String for ignoreip in fail2ban. Be aware! Changing this value invalidates user_data!"
+  default     = "127.0.0.1/8"
+}
+
+variable "custom_RPMs" {
+  type        = string
+  description = "install custom RPMs on Bastion"
+  default     = null
+}
+
+variable "install_option" {
+  type        = string
+  description = "install option in user_data. Be aware: Changing this value results in destroy and add resource"
+  default     = ""
+}
+
+variable "security_group_ingres" {
+  type = list(object({
+    rule = string
+    cidr_blocks = string
+    from_port = number
+    to_port = number
+    description = string
+  }))
+  default = null
+}
